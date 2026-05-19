@@ -2,6 +2,7 @@
 
 import { Pill } from '@/components/ui/Pill';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { useRefetchOnRefresh } from '@/hooks/useRefetchOnRefresh';
 import { getContrastTextColor } from '@/lib/colorContrast';
 import {
   BuildingIcon,
@@ -13,6 +14,7 @@ import {
   XIcon,
 } from '@/components/ui/icons';
 import { createClient } from '@/lib/supabase/client';
+import { bumpRefresh } from '@/store';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
@@ -25,9 +27,6 @@ type Row = {
   created_at: string;
 };
 
-type Props = {
-  refreshKey?: number;
-};
 
 const PAGE_SIZE = 24;
 const PALETTE = ['#0EA5E9', '#14B8A6', '#8B5CF6', '#F97316', '#22C55E', '#EC4899', '#F59E0B', '#A78BFA'];
@@ -54,7 +53,7 @@ function timeAgo(iso: string, now: number): string {
   return `hace ${Math.floor(days / 365)}a`;
 }
 
-export function OrganizationList({ refreshKey = 0 }: Props) {
+export function OrganizationList() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -111,9 +110,7 @@ export function OrganizationList({ refreshKey = 0 }: Props) {
     dedupingInterval: 5000,
   });
 
-  useEffect(() => {
-    void mutate();
-  }, [refreshKey, mutate]);
+  useRefetchOnRefresh(mutate);
 
   const realtimeTimerRef = useRef<number | null>(null);
   const scheduleRealtimeRefresh = useCallback(() => {
@@ -156,6 +153,7 @@ export function OrganizationList({ refreshKey = 0 }: Props) {
       const totalAfter = (next as { total?: number } | undefined)?.total;
       const totalPagesAfter = Math.max(1, Math.ceil((totalAfter ?? 0) / PAGE_SIZE));
       setPage((p) => Math.min(p, totalPagesAfter));
+      bumpRefresh();
     },
     [mutate],
   );

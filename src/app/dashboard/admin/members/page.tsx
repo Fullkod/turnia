@@ -24,7 +24,6 @@ function AdminMembersContent() {
   const [orgs, setOrgs] = useState<OrgOption[]>([]);
   const [orgsLoading, setOrgsLoading] = useState(false);
   const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
-  const [listRefreshKey, setListRefreshKey] = useState(0);
   const [counts, setCounts] = useState<RoleCounts | null>(null);
   const [search, setSearch] = useState('');
 
@@ -55,7 +54,6 @@ function AdminMembersContent() {
       });
   }, [isSuperadmin, orgId, searchParams]);
 
-  const onRefresh = useCallback(() => setListRefreshKey((k) => k + 1), []);
   const handleCountsChange = useCallback((c: RoleCounts) => setCounts(c), []);
 
   if (isLoading) {
@@ -204,8 +202,6 @@ function AdminMembersContent() {
 
       <MembersList
         orgId={effectiveOrgId}
-        refreshKey={listRefreshKey}
-        onRefresh={onRefresh}
         onCountsChange={handleCountsChange}
       />
     </div>

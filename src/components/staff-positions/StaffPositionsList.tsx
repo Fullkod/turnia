@@ -10,7 +10,9 @@ import {
   StethoscopeIcon,
   XIcon,
 } from '@/components/ui/icons';
+import { useRefetchOnRefresh } from '@/hooks/useRefetchOnRefresh';
 import { createClient } from '@/lib/supabase/client';
+import { bumpRefresh } from '@/store';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import type { StaffPositionRow } from './StaffPositionFormModal';
@@ -18,8 +20,6 @@ import { StaffPositionFormModal } from './StaffPositionFormModal';
 
 type Props = {
   orgId: string;
-  refreshKey?: number;
-  onRefresh?: () => void;
 };
 
 const PALETTE = ['#0EA5E9', '#8B5CF6', '#14B8A6', '#F97316', '#F59E0B', '#A78BFA', '#EC4899', '#22C55E'];
@@ -30,7 +30,7 @@ function colorForPosition(id: string): string {
   return PALETTE[Math.abs(hash) % PALETTE.length];
 }
 
-export function StaffPositionsList({ orgId, refreshKey = 0, onRefresh }: Props) {
+export function StaffPositionsList({ orgId }: Props) {
   const [createOpen, setCreateOpen] = useState(false);
   const [editing, setEditing] = useState<StaffPositionRow | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<StaffPositionRow | null>(null);
@@ -83,9 +83,7 @@ export function StaffPositionsList({ orgId, refreshKey = 0, onRefresh }: Props) 
   const rows = data?.positions ?? [];
   const counts = data?.counts ?? {};
 
-  useEffect(() => {
-    void mutate();
-  }, [refreshKey, mutate]);
+  useRefetchOnRefresh(mutate);
 
   const realtimeTimerRef = useRef<number | null>(null);
   const scheduleRealtimeRefresh = useCallback(() => {
@@ -141,9 +139,9 @@ export function StaffPositionsList({ orgId, refreshKey = 0, onRefresh }: Props) 
       );
       return;
     }
-    onRefresh?.();
     void mutate();
-  }, [orgId, confirmDelete, onRefresh, mutate]);
+    bumpRefresh();
+  }, [orgId, confirmDelete, mutate]);
 
   const move = useCallback(
     async (index: number, dir: -1 | 1) => {
@@ -196,10 +194,10 @@ export function StaffPositionsList({ orgId, refreshKey = 0, onRefresh }: Props) 
         return;
       }
 
-      onRefresh?.();
       void mutate();
+      bumpRefresh();
     },
-    [rows, orgId, reordering, onRefresh, mutate],
+    [rows, orgId, reordering, mutate],
   );
 
   if (loading) {
@@ -362,8 +360,8 @@ export function StaffPositionsList({ orgId, refreshKey = 0, onRefresh }: Props) 
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         onSuccess={() => {
-          onRefresh?.();
           void mutate();
+          bumpRefresh();
         }}
         orgId={orgId}
         editing={null}
@@ -373,8 +371,8 @@ export function StaffPositionsList({ orgId, refreshKey = 0, onRefresh }: Props) 
         open={!!editing}
         onClose={() => setEditing(null)}
         onSuccess={() => {
-          onRefresh?.();
           void mutate();
+          bumpRefresh();
         }}
         orgId={orgId}
         editing={editing}

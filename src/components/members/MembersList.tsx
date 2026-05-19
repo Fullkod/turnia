@@ -9,8 +9,10 @@ import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { Icons } from '@/components/ui/icons';
 import { Pill, type PillTone } from '@/components/ui/Pill';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { useRefetchOnRefresh } from '@/hooks/useRefetchOnRefresh';
 import { cn } from '@/lib/cn';
 import { createClient } from '@/lib/supabase/client';
+import { bumpRefresh } from '@/store';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { EditMembershipForm } from './EditMembershipForm';
@@ -27,8 +29,6 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 type Props = {
   orgId: string;
-  refreshKey?: number;
-  onRefresh?: () => void;
   onCountsChange?: (counts: RoleCounts) => void;
 };
 
@@ -75,7 +75,7 @@ function roleToTone(role: string): PillTone {
   }
 }
 
-export function MembersList({ orgId, refreshKey = 0, onRefresh, onCountsChange }: Props) {
+export function MembersList({ orgId, onCountsChange }: Props) {
   const [detailMember, setDetailMember] = useState<MemberForDetails | null>(null);
   const [editMember, setEditMember] = useState<MemberForDetails | null>(null);
   const [confirmRemove, setConfirmRemove] = useState<MemberForDetails | null>(null);
@@ -150,9 +150,7 @@ export function MembersList({ orgId, refreshKey = 0, onRefresh, onCountsChange }
     dedupingInterval: 5000,
   });
 
-  useEffect(() => {
-    void mutate();
-  }, [refreshKey, mutate]);
+  useRefetchOnRefresh(mutate);
 
   useEffect(() => {
     if (data?.counts) onCountsChange?.(data.counts);
@@ -204,9 +202,9 @@ export function MembersList({ orgId, refreshKey = 0, onRefresh, onCountsChange }
       setRemoveError(ERROR_MESSAGES[res?.error ?? ''] ?? res?.error ?? 'Error al eliminar');
       return;
     }
-    onRefresh?.();
     void mutate();
-  }, [orgId, confirmRemove, onRefresh, mutate]);
+    bumpRefresh();
+  }, [orgId, confirmRemove, mutate]);
 
   const rows = data?.rows ?? [];
   const total = data?.total ?? 0;
@@ -367,8 +365,8 @@ export function MembersList({ orgId, refreshKey = 0, onRefresh, onCountsChange }
           member={editMember}
           orgId={orgId}
           onSuccess={() => {
-            onRefresh?.();
             void mutate();
+            bumpRefresh();
           }}
           onClose={() => setEditMember(null)}
         />

@@ -5,6 +5,7 @@ import { CreateOrganizationModal } from '@/components/organizations/CreateOrgani
 import { OrganizationList } from '@/components/organizations/OrganizationList';
 import { OrganizationSettings } from '@/components/organizations/OrganizationSettings';
 import { useCurrentOrg } from '@/hooks/useCurrentOrg';
+import { bumpRefresh } from '@/store';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
@@ -15,7 +16,6 @@ function AdminOrganizationsContent() {
   const searchParams = useSearchParams();
   const editId = searchParams.get('edit');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [listRefreshKey, setListRefreshKey] = useState(0);
 
   if (isLoading) {
     return (
@@ -52,7 +52,10 @@ function AdminOrganizationsContent() {
         <OrganizationSettings
           orgId={editId}
           backHref="/dashboard/admin/organizations"
-          onDeleted={() => router.push('/dashboard/admin/organizations')}
+          onDeleted={() => {
+            bumpRefresh();
+            router.push('/dashboard/admin/organizations');
+          }}
         />
       </div>
     );
@@ -95,11 +98,11 @@ function AdminOrganizationsContent() {
 
       {canManageOrgs ? (
         <>
-          <OrganizationList refreshKey={listRefreshKey} />
+          <OrganizationList />
           <CreateOrganizationModal
             open={showCreateModal}
             onClose={() => setShowCreateModal(false)}
-            onCreated={() => setListRefreshKey((k) => k + 1)}
+            onCreated={() => bumpRefresh()}
           />
         </>
       ) : null}

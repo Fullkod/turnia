@@ -10,7 +10,9 @@ import {
   SettingsIcon,
   XIcon,
 } from '@/components/ui/icons';
+import { useRefetchOnRefresh } from '@/hooks/useRefetchOnRefresh';
 import { createClient } from '@/lib/supabase/client';
+import { bumpRefresh } from '@/store';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import type { ShiftTypeRow } from './ShiftTypeFormModal';
@@ -18,8 +20,6 @@ import { ShiftTypeFormModal } from './ShiftTypeFormModal';
 
 type Props = {
   orgId: string;
-  refreshKey?: number;
-  onRefresh?: () => void;
 };
 
 function formatTime(t: string | null): string {
@@ -39,7 +39,7 @@ function durationOf(start: string | null, end: string | null): string {
   return `${h}h ${m}m`;
 }
 
-export function ShiftTypesList({ orgId, refreshKey = 0, onRefresh }: Props) {
+export function ShiftTypesList({ orgId }: Props) {
   const [createOpen, setCreateOpen] = useState(false);
   const [editing, setEditing] = useState<ShiftTypeRow | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<ShiftTypeRow | null>(null);
@@ -101,9 +101,7 @@ export function ShiftTypesList({ orgId, refreshKey = 0, onRefresh }: Props) {
   const rows = data?.rows ?? [];
   const counts = data?.counts ?? {};
 
-  useEffect(() => {
-    void mutate();
-  }, [refreshKey, mutate]);
+  useRefetchOnRefresh(mutate);
 
   const realtimeTimerRef = useRef<number | null>(null);
   const scheduleRealtimeRefresh = useCallback(() => {
@@ -159,9 +157,9 @@ export function ShiftTypesList({ orgId, refreshKey = 0, onRefresh }: Props) {
       );
       return;
     }
-    onRefresh?.();
     void mutate();
-  }, [orgId, confirmDelete, onRefresh, mutate]);
+    bumpRefresh();
+  }, [orgId, confirmDelete, mutate]);
 
   const existingLetters = rows.map((r) => r.letter);
   const existingColors = rows.map((r) => r.color);
@@ -217,10 +215,10 @@ export function ShiftTypesList({ orgId, refreshKey = 0, onRefresh }: Props) {
         return;
       }
 
-      onRefresh?.();
       void mutate();
+      bumpRefresh();
     },
-    [rows, orgId, reordering, onRefresh, mutate],
+    [rows, orgId, reordering, mutate],
   );
 
   if (loading) {
@@ -362,8 +360,8 @@ export function ShiftTypesList({ orgId, refreshKey = 0, onRefresh }: Props) {
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         onSuccess={() => {
-          onRefresh?.();
           void mutate();
+          bumpRefresh();
         }}
         orgId={orgId}
         editing={null}
@@ -375,8 +373,8 @@ export function ShiftTypesList({ orgId, refreshKey = 0, onRefresh }: Props) {
         open={!!editing}
         onClose={() => setEditing(null)}
         onSuccess={() => {
-          onRefresh?.();
           void mutate();
+          bumpRefresh();
         }}
         orgId={orgId}
         editing={editing}

@@ -6,7 +6,7 @@ import { useCurrentOrg } from '@/hooks/useCurrentOrg';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 type OrgOption = { id: string; name: string };
 
@@ -16,7 +16,6 @@ function AdminShiftTypesContent() {
   const [orgs, setOrgs] = useState<OrgOption[]>([]);
   const [orgsLoading, setOrgsLoading] = useState(false);
   const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
-  const [listRefreshKey, setListRefreshKey] = useState(0);
 
   useEffect(() => {
     if (!isSuperadmin) {
@@ -43,8 +42,6 @@ function AdminShiftTypesContent() {
         }
       });
   }, [isSuperadmin, orgId, searchParams]);
-
-  const onRefresh = useCallback(() => setListRefreshKey((k) => k + 1), []);
 
   if (isLoading) {
     return (
@@ -143,7 +140,7 @@ function AdminShiftTypesContent() {
         </div>
       )}
 
-      <ShiftTypesList orgId={effectiveOrgId} refreshKey={listRefreshKey} onRefresh={onRefresh} />
+      <ShiftTypesList orgId={effectiveOrgId} />
     </div>
   );
 }

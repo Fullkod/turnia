@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx supabase *)"
+      "Bash(npx supabase *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Local-Disc-D\\\\Project\\\\enterpreneurship\\\\turnia\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
+      "Bash(git stash *)"
     ]
   }
 }

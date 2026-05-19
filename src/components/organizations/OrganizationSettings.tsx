@@ -7,6 +7,7 @@ import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { IconAutogenSlug } from '@/components/ui/IconAutogenSlug';
 import { createClient } from '@/lib/supabase/client';
 import { generateSlug } from '@/lib/utils';
+import { bumpRefresh } from '@/store';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -79,6 +80,7 @@ export function OrganizationSettings({ orgId, backHref, onDeleted }: Props) {
       setSuccess('Guardado');
       setTimeout(() => setSuccess(null), 2500);
       load();
+      bumpRefresh();
     },
     [orgId, name, slug, load]
   );

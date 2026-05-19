@@ -7,6 +7,7 @@ import {
   SettingsIcon,
   UsersIcon,
 } from '@/components/ui/icons';
+import { useRefetchOnRefresh } from '@/hooks/useRefetchOnRefresh';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
@@ -138,11 +139,13 @@ export function TeamsList({ parentOrgId, isSuperadmin = false }: Props) {
     return { teams, parentName };
   }, [parentOrgId]);
 
-  const { data, error, isLoading } = useSWR(swrKey, fetcher, {
+  const { data, error, isLoading, mutate } = useSWR(swrKey, fetcher, {
     revalidateOnFocus: true,
     revalidateOnReconnect: true,
     dedupingInterval: 5000,
   });
+
+  useRefetchOnRefresh(mutate);
 
   if (isLoading) {
     return (
