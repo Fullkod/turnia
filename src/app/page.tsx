@@ -176,7 +176,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-text-primary">
+      <footer className="bg-[#0F172A]">
         <div className="mx-auto max-w-6xl px-6 py-12 lg:px-20">
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
             <div className="flex items-center gap-3">
@@ -192,8 +192,19 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-8 border-t border-white/20 pt-6 text-center text-sm text-muted">
-            © 2026 Turnia. Todos los derechos reservados.
+          <div className="mt-8 flex flex-col items-center justify-center gap-2 border-t border-white/20 pt-6 text-center text-sm text-muted md:flex-row md:gap-4">
+            <span>© 2026 Turnia. Todos los derechos reservados.</span>
+            <a
+              href="https://fullkod.com/?ref=turnia"
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-1.5 hover:text-white"
+            >
+              Desarrollado por
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/fullkod-symbol-reversed.svg" alt="" className="h-4 w-4" />
+              <span className="font-semibold text-white">Fullkod</span>
+            </a>
           </div>
         </div>
       </footer>
