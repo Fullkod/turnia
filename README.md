@@ -175,3 +175,8 @@ Software propietario. Todos los derechos reservados por Fullkod — ver [LICENSE
 ## Soporte
 
 Para soporte y consultas, contactar al equipo de desarrollo.
+
+<!-- fullkod-signature -->
+---
+
+<a href="https://fullkod.com/?ref=turnia"><img src="https://fullkod.com/brand/fullkod-symbol.svg" width="20" height="20" align="center" alt="Fullkod"></a> Built by **[Fullkod](https://fullkod.com/?ref=turnia)**
