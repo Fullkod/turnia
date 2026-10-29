@@ -335,3 +335,8 @@ body {
 .dark .sidebar-nav-scroll {
   scrollbar-color: var(--muted) transparent;
 }
+
+/* FullkodCredit: symbol per theme (follows the .dark class) */
+.fullkod-credit-dark { display: none; }
+.dark .fullkod-credit-light { display: none; }
+.dark .fullkod-credit-dark { display: inline-block; }

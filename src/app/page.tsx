@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { FullkodCredit } from '@/components/ui/FullkodCredit';
 
 export default function Home() {
   return (
@@ -194,17 +195,7 @@ export default function Home() {
 
           <div className="mt-8 flex flex-col items-center justify-center gap-2 border-t border-white/20 pt-6 text-center text-sm text-muted md:flex-row md:gap-4">
             <span>© 2026 Turnia. Todos los derechos reservados.</span>
-            <a
-              href="https://fullkod.com/?ref=turnia"
-              target="_blank"
-              rel="noopener"
-              className="inline-flex items-center gap-1.5 hover:text-white"
-            >
-              Desarrollado por
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/fullkod-symbol-reversed.svg" alt="" className="h-4 w-4" />
-              <span className="font-semibold text-white">Fullkod</span>
-            </a>
+            <FullkodCredit tone="onDark" className="text-sm" />
           </div>
         </div>
       </footer>
