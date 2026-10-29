@@ -170,7 +170,7 @@ Este es un proyecto en desarrollo activo. Para contribuir:
 
 ## Licencia
 
-Privado - Todos los derechos reservados
+Software propietario. Todos los derechos reservados por Fullkod — ver [LICENSE](LICENSE).
 
 ## Soporte
 
